@@ -1,0 +1,26 @@
+# Node.js dependencies
+node_modules/
+
+# TypeScript build output
+dist/
+
+# Yarn and npm logs
+yarn-error.log
+npm-debug.log
+
+# VSCode settings
+.vscode/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# TypeScript Type Definition files
+*.d.ts
+
+# MacOS-specific files
+.DS_Store
+
+# OS-specific files
+Thumbs.db
