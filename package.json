@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc",
     "install-besu": "yarn build && node dist/installBesu",
+    "start-besu": "yarn build && node dist/startBesu",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "keywords": [
