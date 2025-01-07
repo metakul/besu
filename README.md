@@ -18,8 +18,8 @@ A TypeScript library for running and managing Hyperledger Besu nodes. This libra
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/besu-runner-lib.git
-    cd besu-runner-lib
+    git clone https://github.com/metakul/besu.git
+    cd besu
     ```
 
 2. Install the required dependencies:
