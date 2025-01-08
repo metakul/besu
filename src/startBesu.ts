@@ -24,7 +24,7 @@ const promptUser = (question: string): Promise<string> => {
 };
 
 // Function to start Besu node
-const startBesu = async (): Promise<void> => {
+export const startBesu = async (): Promise<void> => {
     await listBesuContainers();
 
     const useExisting = (await promptUser('Do you want to rerun an existing container? (y/n): ')).toLowerCase() === 'y';

@@ -17,7 +17,11 @@ By default, Besu stores data in the Forest of Tries format. Here We Stores Data 
 - **Docker** must be installed and running on your machine.
 - **Node.js** and **npm** must be installed to use the library and run the commands.
 
-## Installation
+# Installation
+
+    Besu-Runner  can be run via both github and npm library
+
+ ## Via Github
 
 1. Clone the repository:
 
@@ -33,6 +37,26 @@ By default, Besu stores data in the Forest of Tries format. Here We Stores Data 
     ```
 
     This will install both the runtime dependencies and TypeScript development tools.
+
+ ## Via Npm
+
+    You can install the Besu Runner Library globally via npm to run it directly from the command line:
+
+1. Install the library globally:
+
+    ```bash
+    npm install -g besu-runner-lib
+    cd besu
+    ```
+
+2. Verify the installation:
+
+    ```bash
+    besu-runner-lib --help
+    ```
+
+  This will show the available commands for starting, connecting, managing Besu containers.
+
 
 ## Usage
 
