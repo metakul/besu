@@ -122,3 +122,39 @@ Enter the RPC WebSocket Port (default: 8546): 8002
 Starting Besu node with the following command:
 docker run -p 8545:8545 -p 8546:8546 -p 30303:30303 -e BESU_RPC_HTTP_ENABLED=true -e BESU_NETWORK=mainnet hyperledger/besu:latest --rpc-http-enabled --rpc-ws-enabled --sync-mode=SNAP --data-storage-format=BONSAI --data-path=mainnet/besu-data
 ```
+
+## 4. Starting an The Besu with dev network with own geneis
+
+You can start a new Besu node using a custom genesis file. This allows you to define your own network configuration.
+
+- Steps:
+
+    1. Enter the network name.
+    2. Provide the desired RPC HTTP and P2P ports.
+    3. Optionally enable WebSocket RPC and specify its port.
+    4. Provide the path to your custom genesis file or leave it empty to skip.
+
+    ### Example Command Flow
+    ```
+    Enter the network (default: holesky): devnet
+    Enter the RPC HTTP Port (default: 8545): 9000
+    Enter the P2P Port (default: 30303): 9001
+    Do you want to enable RPC Web socket (y/n)? y
+    Enter the RPC WebSocket Port (default: 8546): 9002
+    Enter the path to the genesis file (or leave empty to skip): /path/to/genesis.json
+    ```
+
+## Connecting Nodes to Eth Mainnet and Public Testnet
+
+Use the besu command with the required command line options to start a node.
+
+- Download the Besu [packaged binaries](https://github.com/hyperledger/besu/releases)
+
+- cd into Besu extracted folder
+
+- start besu via binaries
+ ```
+  bin/besu --network=dev --miner-enabled --miner-coinbase=<miner-address> --rpc-http-cors-origins="all" --host-allowlist="*" --rpc-ws-enabled --rpc-http-enabled --data-path=/tmp/tmpDatdir
+```
+
+

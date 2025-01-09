@@ -1,9 +1,9 @@
 import { exec } from 'child_process';
-// import path from 'path';
+import path from 'path';
 // import { fileURLToPath } from 'url';
 import readline from 'readline';
 import { listBesuContainers, showContainerLogs } from './utils/ListBesuContainers.js';
-
+import fs from 'fs';
 // Get __dirname equivalent in ES module
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
@@ -48,7 +48,24 @@ export const startBesu = async (): Promise<void> => {
     const p2pPort = await promptUser('Enter the P2P Port (default: 30303): ') || '30303';
 
     const enableRpc = (await promptUser('Do you want to enable RPC Web socket (y/n)? ')).toLowerCase() === 'y';
+    
+    // @dev Adds Geneis file option if user wants to use a custom genesis file
+    const genesisFilePath = await promptUser('Enter the path to the genesis file (or leave empty to skip): ');
 
+    let genesisOption = '';
+    let volumeMount = '';
+
+    if (genesisFilePath) {
+        const absoluteGenesisPath = path.resolve(genesisFilePath); // Convert to absolute path
+        if (fs.existsSync(absoluteGenesisPath)) {
+            volumeMount = `-v ${absoluteGenesisPath}:/opt/besu/genesis.json`; // volume mount to map the host path absoluteGenesisPath to container system
+            genesisOption = `--genesis-file /opt/besu/genesis.json`;
+        } else {
+            console.error('Error: Specified genesis file does not exist.');
+            rl.close();
+            return;
+        }
+    }
     let rpcWsPort = '8546';
     let rpcOptions = '';
     let enableRpcWs = '';
@@ -60,7 +77,7 @@ export const startBesu = async (): Promise<void> => {
     }
 
     // Construct the docker run command
-    const command = `docker run -p ${rpcHttpPort}:8545 ${rpcOptions} -p ${p2pPort}:30303 -e BESU_RPC_HTTP_ENABLED=true -e BESU_NETWORK=${network} hyperledger/besu:latest --rpc-http-enabled ${enableRpcWs} --sync-mode=SNAP --data-storage-format=BONSAI --data-path=${network}/besu-data`;
+    const command = `docker run -p ${rpcHttpPort}:8545 ${rpcOptions} -p ${p2pPort}:30303 -e BESU_RPC_HTTP_ENABLED=true -e BESU_NETWORK=${network} ${volumeMount} hyperledger/besu:latest --rpc-http-enabled ${enableRpcWs} --sync-mode=SNAP --data-storage-format=BONSAI --data-path=${network}/besu-data ${genesisOption}`;
 
     console.log('Starting Besu node with the following command:');
     console.log(command);
