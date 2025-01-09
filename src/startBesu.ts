@@ -48,7 +48,15 @@ export const startBesu = async (): Promise<void> => {
     const p2pPort = await promptUser('Enter the P2P Port (default: 30303): ') || '30303';
 
     const enableRpc = (await promptUser('Do you want to enable RPC Web socket (y/n)? ')).toLowerCase() === 'y';
-    
+        let rpcWsPort = '8546';
+        let rpcOptions = '';
+        let enableRpcWs = '';
+
+        if (enableRpc) {
+            rpcWsPort = await promptUser('Enter the RPC WebSocket Port (default: 8546): ') || '8546';
+            rpcOptions = `-p ${rpcWsPort}:8546 `;
+            enableRpcWs = "--rpc-ws-enabled"
+        }
     // @dev Adds Geneis file option if user wants to use a custom genesis file
     const genesisFilePath = await promptUser('Enter the path to the genesis file (or leave empty to skip): ');
 
@@ -66,15 +74,24 @@ export const startBesu = async (): Promise<void> => {
             return;
         }
     }
-    let rpcWsPort = '8546';
-    let rpcOptions = '';
-    let enableRpcWs = '';
+        // Static nodes configuration
+        const useStaticNodes = (await promptUser('Do you want to use a static-nodes.json file? (y/n): ')).toLowerCase() === 'y';
+        let staticNodesOption = '';
+        let staticNodesMount=''
 
-    if (enableRpc) {
-        rpcWsPort = await promptUser('Enter the RPC WebSocket Port (default: 8546): ') || '8546';
-        rpcOptions = `-p ${rpcWsPort}:8546 `;
-        enableRpcWs ="--rpc-ws-enabled"
-    }
+        if (useStaticNodes) {
+            const staticNodesPath = await promptUser('Enter the path to the static-nodes.json file: ');
+            const absoluteStaticNodesPath = path.resolve(staticNodesPath);
+
+            if (fs.existsSync(absoluteStaticNodesPath)) {
+                staticNodesMount = `-v ${absoluteStaticNodesPath}:/opt/besu/static-nodes.json`
+                staticNodesOption = ` --static-nodes-file /opt/besu/static-nodes.json`
+            } else {
+                console.error('Error: Specified static-nodes.json file does not exist.');
+                rl.close();
+                return;
+            }
+        }
 
     // Prompt for Host Allowlist
     const hostAllowlist = await promptUser('Enter the host allowlist (default: * for all hosts): ') || '*';
@@ -86,7 +103,7 @@ export const startBesu = async (): Promise<void> => {
     const hostAllowlistOption = `--host-allowlist=${hostAllowlist}`;
 
     // Construct the docker run command
-    const command = `docker run -p ${rpcHttpPort}:8545 ${rpcOptions} -p ${p2pPort}:30303 -e BESU_RPC_HTTP_ENABLED=true -e BESU_NETWORK=${network} ${volumeMount} hyperledger/besu:latest --rpc-http-enabled ${enableRpcWs} --sync-mode=SNAP --data-storage-format=BONSAI --data-path=${network}/besu-data ${genesisOption} ${hostAllowlistOption}`;
+        const command = `docker run -p ${rpcHttpPort}:8545 ${rpcOptions} -p ${p2pPort}:30303 -e BESU_RPC_HTTP_ENABLED=true -e BESU_NETWORK=${network} ${volumeMount} ${staticNodesMount}  hyperledger/besu:latest --rpc-http-enabled ${enableRpcWs} --sync-mode=SNAP --data-storage-format=BONSAI  ${genesisOption} ${hostAllowlistOption} ${staticNodesOption}`;
 
     console.log('Starting Besu node with the following command:');
     console.log(command);
