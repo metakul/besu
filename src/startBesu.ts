@@ -76,8 +76,17 @@ export const startBesu = async (): Promise<void> => {
         enableRpcWs ="--rpc-ws-enabled"
     }
 
+    // Prompt for Host Allowlist
+    const hostAllowlist = await promptUser('Enter the host allowlist (default: * for all hosts): ') || '*';
+
+    if (hostAllowlist === '*') {
+        console.warn('Caution: Using * for --host-allowlist is not recommended for production.');
+    }
+
+    const hostAllowlistOption = `--host-allowlist=${hostAllowlist}`;
+
     // Construct the docker run command
-    const command = `docker run -p ${rpcHttpPort}:8545 ${rpcOptions} -p ${p2pPort}:30303 -e BESU_RPC_HTTP_ENABLED=true -e BESU_NETWORK=${network} ${volumeMount} hyperledger/besu:latest --rpc-http-enabled ${enableRpcWs} --sync-mode=SNAP --data-storage-format=BONSAI --data-path=${network}/besu-data ${genesisOption}`;
+    const command = `docker run -p ${rpcHttpPort}:8545 ${rpcOptions} -p ${p2pPort}:30303 -e BESU_RPC_HTTP_ENABLED=true -e BESU_NETWORK=${network} ${volumeMount} hyperledger/besu:latest --rpc-http-enabled ${enableRpcWs} --sync-mode=SNAP --data-storage-format=BONSAI --data-path=${network}/besu-data ${genesisOption} ${hostAllowlistOption}`;
 
     console.log('Starting Besu node with the following command:');
     console.log(command);

@@ -158,3 +158,10 @@ Use the besu command with the required command line options to start a node.
 ```
 
 
+
+
+## TODO
+
+Nots:nd signed transactions, use eth_sendRawTransaction. eth_sendTransaction is not implemented.For account management, use third-party wallets.
+
+- [Create and send transactions](https://besu.hyperledger.org/24.7.0/public-networks/how-to/send-transactions#use-wallets-for-key-management)
